@@ -1,0 +1,6 @@
+**/__pycache__/
+**/*.pyc
+python/test_*.py
+test/
+.github/
+.gitignore

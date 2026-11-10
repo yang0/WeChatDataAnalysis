@@ -1,27 +1,26 @@
-# Third-Party Notices
+# Sources and third-party notices
 
-## Optional local voice transcription
+## WeChatDataAnalysis subset
 
-The optional local voice transcription feature uses the following Python packages:
+The following files are extracted from `yang0/WeChatDataAnalysis` (`main`, commit `fffe9ca2bdb27f786227cff9d3620940ad8c034c`), a fork of `LifeArchiveProject/WeChatDataAnalysis`:
 
-| Package | Upstream project | License |
-| --- | --- | --- |
-| `faster-whisper` | https://github.com/SYSTRAN/faster-whisper | MIT |
-| `CTranslate2` | https://github.com/OpenNMT/CTranslate2 | MIT |
-| `PyAV` | https://github.com/PyAV-Org/PyAV | BSD-3-Clause |
-| `OpenCC Python Reimplemented` | https://github.com/yichen0831/opencc-python | Apache-2.0 |
-| `ONNX Runtime` | https://github.com/microsoft/onnxruntime | MIT |
-| `Hugging Face tokenizers` | https://github.com/huggingface/tokenizers | Apache-2.0 |
+- `python/wechat_decrypt_tool/wechat_decrypt.py`
+- `python/wechat_decrypt_tool/sqlite_wal.py`
+- `python/wechat_decrypt_tool/sqlite_diagnostics.py`
+- `python/wechat_decrypt_tool/database_filters.py`
 
-Whisper model weights are not included in this repository or its pull request. Users provide or download model weights separately and must follow the selected model's license and usage terms.
+The only plugin-specific change inside these extracted files is a cooperative cancellation check in the per-page decryption loop. `app_paths.py` and `logging_config.py` are small standalone adapters; other original application services are not bundled.
 
-## Optional macOS WCDB passphrase capture
+The original source repository has no root LICENSE declaring a general redistribution license at the inspected revision. This dedicated branch preserves the source repository lineage and attribution. `package.json` therefore uses `UNLICENSED`; no new MIT or other blanket license is claimed for extracted code. Any future external distribution must resolve the upstream licensing terms.
 
-The optional Apple Silicon LLDB capture workflow adapts the breakpoint and
-register-inspection approach from
-[`TANGandXUE/wcdb-key-tool`](https://github.com/TANGandXUE/wcdb-key-tool),
-which is distributed under the MIT License. The integration adds target
-database validation, transaction recovery, signature verification, and
-privacy-preserving diagnostics; it does not bundle user databases or keys.
-The complete upstream license text is included at
-`docs/licenses/wcdb-key-tool-MIT.txt`.
+## Magpie integration reference
+
+The package manifest, sandboxed page bootstrap, loopback UI architecture and Python virtual-environment pattern were implemented with reference to `yang0/magpie-gptfree` (package metadata declares MIT) and the official `yetone/magpie` plugin page documentation. GPT account, authentication, model and image-generation code is not included.
+
+## Runtime dependencies
+
+- cryptography — https://github.com/pyca/cryptography — Apache-2.0 OR BSD-3-Clause.
+- psutil (optional Windows key acquisition) — https://github.com/giampaolo/psutil — BSD-3-Clause.
+- wx_key (optional Windows key acquisition) — wrapper releases: https://github.com/H3CoF6/py_wx_key/releases/ ; underlying component: https://github.com/ycccccccy/wx_key . The existing CPython 3.11–3.14 Windows x64 wheels from the same inspected WeChatDataAnalysis commit are retained under `python/key_wheels` and installed on demand. Their distribution terms are not re-licensed here. This plugin uses the original initialize/poll/cleanup API.
+
+Dependencies are installed into a separate local virtual environment. No user databases, keys, media, machine credentials, native-core license mechanisms, model weights or upstream UI bundles are included. The optional wx_key wheels are the only bundled native key-capture dependency.

@@ -1,0 +1,40 @@
+name: Magpie WeChat plugin
+on:
+  push:
+    branches: [magpie-plugin]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r python/requirements.txt
+      - run: npm run check
+      - run: npm test
+      - run: npm run test:python
+      - run: npm pack --dry-run
+      - if: runner.os == 'Linux'
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+          python test/ui_smoke.py
+        env:
+          UI_ARTIFACTS: ui-artifacts
+      - if: runner.os == 'Linux' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-screenshots
+          path: ui-artifacts
+          if-no-files-found: ignore

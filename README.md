@@ -1,274 +1,74 @@
-<div align="center">
-    <h1>WeChatDataAnalysis - 微信数据库解密与分析工具</h1>
-    <p>微信 4.x 数据库解密与分析，支持实时更新、聊天记录与朋友圈导出、年度总结。</p>
-    <p>加入 TG 群，第一时间获取福利和最新信息：<a href="https://t.me/+IQKBDeXtaKozZWYx">https://t.me/+IQKBDeXtaKozZWYx</a></p>
-    <p>如果你需要 QQ 侧的数据解密、分析或年度总结类工具，欢迎体验 <a href="https://github.com/H3CoF6/WeQ">H3CoF6/WeQ</a>；WeQ 作者也是本项目开发成员之一</p>
-    <p>需要 抖音 的数据分析或年度总结类工具？欢迎体验 <a href="https://github.com/ZhangYukwiver/DouyinDataReview">DouyinDataReview</a>
-</div>
+# 微信解密 · Magpie 插件
 
-## 年度总结
+把微信 4.x 加密数据库转换为普通 SQLite。参考 `yang0/magpie-gptfree` 的插件页面集成，独立提取 `yang0/WeChatDataAnalysis` 的数据库解密部分。
 
-<table>
-  <tr>
-    <td align="center" colspan="2"><img src="frontend/public/style1.png" alt="年度总结 Modern" width="800"/></td>
-  </tr>
-  <tr>
-    <td><img src="frontend/public/AnnualSummary1.gif" alt="AnnualSummary 1" width="400"/></td>
-    <td><img src="frontend/public/AnnualSummary2.gif" alt="AnnualSummary 2" width="400"/></td>
-  </tr>
-  <tr>
-    <td><img src="frontend/public/AnnualSummary3.gif" alt="AnnualSummary 3" width="400"/></td>
-    <td><img src="frontend/public/AnnualSummary4.gif" alt="AnnualSummary 4" width="400"/></td>
-  </tr>
-  <tr>
-    <td><img src="frontend/public/AnnualSummary5.gif" alt="AnnualSummary 5" width="400"/></td>
-    <td><img src="frontend/public/AnnualSummary6.png" alt="AnnualSummary 6" width="400"/></td>
-  </tr>
-  <tr>
-    <td><img src="frontend/public/AnnualSummary7.png" alt="AnnualSummary 7" width="400"/></td>
-    <td><img src="frontend/public/AnnualSummary8.png" alt="AnnualSummary 8" width="400"/></td>
-  </tr>
-</table>
+## 安装
 
-## 界面预览
+在 Magpie 的「插件 → 发现」底部输入：
 
-<table>
-  <tr>
-    <td align="center" colspan="2"><b>聊天记录页面</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/message.png" alt="聊天记录页面" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>实时消息同步</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/RealTimeMessages.gif" alt="实时消息同步" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>设置面板</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/setting.png" alt="设置面板" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>朋友圈</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/sns.png" alt="朋友圈" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>聊天记录搜索</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/search.png" alt="聊天记录搜索" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>聊天记录导出</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/export.png" alt="聊天记录导出" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>联系人导出</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/Contact.png" alt="联系人导出" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>微信收藏</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/readme-favorites.png" alt="微信收藏" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>小程序</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/readme-mini-programs.png" alt="小程序" width="800"/></td>
-  </tr>
-  <tr>
-    <td align="center" colspan="2"><b>视频号直播</b></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><img src="frontend/public/readme-finder.png" alt="视频号直播" width="800"/></td>
-  </tr>
-</table>
-
-## 可导出的内容
-
-| 内容 | 支持格式 | 导出范围 / 说明 |
-| --- | --- | --- |
-| 聊天记录 | HTML / JSON / TXT / Excel（ZIP） | 当前会话、自定义会话、全部会话、群聊或单聊；支持按消息类型和时间筛选 |
-| 朋友圈 | HTML / JSON / TXT / Excel（ZIP） | 指定联系人或全部联系人 |
-| 联系人 | HTML / JSON / TXT / Excel | 支持按联系人分类和关键词筛选，可选择是否包含头像链接 |
-| 收藏 | HTML / JSON / TXT / Excel（ZIP） | 支持按收藏类型和关键词筛选 |
-| 好友验证 | HTML / JSON / TXT / Excel | 支持按发起方向和关键词筛选 |
-| 小程序 | HTML / JSON / TXT / Excel | 支持按关键词筛选 |
-| 视频号直播 | HTML / JSON / TXT / Excel | 支持按直播类型和关键词筛选 |
-| 转账与红包 | HTML / JSON / TXT / Excel | 支持按记录类型和关键词筛选 |
-| 服务号记录 | HTML / JSON / TXT / Excel | 支持按服务号和记录类型导出 |
-| 账号数据归档 | ZIP | 可选择导出数据库、资源文件或两者 |
-
-> Excel 格式生成 `.xlsx` 文件；聊天记录、朋友圈和收藏会将对应格式文件与必要资源一起打包为 ZIP。
-
-## 快速开始
-
-### 1. 下载桌面安装包（推荐）
-
-1. 打开 Release 页面（最新版）：https://github.com/LifeArchiveProject/WeChatDataAnalysis/releases/latest
-2. Windows 下载以 `Setup.exe` 结尾的安装包；macOS 15+ 的 Apple Silicon Mac 下载对应版本的 `.dmg` 或 `.zip`
-3. 安装完成后启动 `WeChatDataAnalysis`
-
->
-> macOS 首次打开若提示来源限制，请在“系统设置 → 隐私与安全性”中确认来自本仓库的应用。图片密钥扫描还可能需要授予终端或应用辅助功能权限。
-
-### 2. 从源码运行（开发者）
-
-#### 2.1 克隆项目
-
-```bash
-git clone https://github.com/LifeArchiveProject/WeChatDataAnalysis.git
-cd WeChatDataAnalysis
+```text
+github:yang0/WeChatDataAnalysis#magpie-plugin
 ```
 
-#### 2.2 安装后端依赖
+安装并启用后，打开「微信解密」。本分支根目录就是独立插件，不需要安装原项目。原项目 `main` 保留原样；不要把这个专用分支合并回原项目。
 
-```bash
-# 使用uv (推荐)
-uv sync --no-editable
+## 使用
+
+1. 选择自己的微信账号数据目录，推荐选择该账号的 `db_storage`。也可以点击「查找默认数据目录」。自定义存储位置可直接填写完整路径。
+2. 选择一个独立的输出目录，不能与源目录相同或互相包含。
+3. 填入已有的 64 位十六进制数据库密钥，或在 Windows 展开「没有密钥？从 Windows 微信获取」。自动获取会重启微信，界面要求先确认保存内容；随后在微信窗口完成登录。
+4. 点击「开始解密」。每次生成一个独立结果目录，保留源文件的相对路径。界面显示每个文件的成功、失败原因与 WAL 合并情况；完整结果保存在 `report.json`。
+
+结果是可以用 SQLite 工具读取的 `.db`，不是聊天记录 TXT。数据库内的部分消息字段仍可能使用压缩或结构化编码，需要额外解析才能整理成可读聊天记录。当前不包含图片、语音、视频解密，聊天分析、年度总结和实时同步。
+
+## 运行环境
+
+- Magpie 提供插件宿主，不需要安装 Electron、启动 FastAPI、配置 Docker 或另外运行服务。
+- 本机需要 **Python 3.11+**。插件首次执行任务时，会自动在用户目录创建专属虚拟环境并安装 `cryptography`；Windows 获取密钥时额外安装 `psutil` 和 `wx_key`。依赖安装需要联网，数据库解密本身不上传数据。
+- 没有 Python 时会给出明确错误。安装 Python 后重试即可；插件不会自动下载安装 Python 本体，也不会修改全局 Python 包。
+- 自动获取密钥先支持 Windows x64 / Python 3.11–3.14（复用原仓库的预编译组件），可能需要以管理员身份启动 Magpie；兼容性取决于微信版本。macOS / Linux 可用已有正确密钥处理兼容的微信 4.x 数据库副本。微信 3.x 不在当前支持范围。
+- 如需使用自己管理的解释器，启动 Magpie 前设置 `MAGPIE_WECHAT_PYTHON` 为已安装上述依赖的 Python 路径。`MAGPIE_WECHAT_HOME` 可修改插件专属环境目录。
+
+### 关于“后台服务”
+
+没有独立后台程序需要你启动。Magpie 的内嵌页面受沙箱限制，按照参考插件的方式，由插件宿主自动提供一个仅监听 `127.0.0.1:37987` 的轻量页面/通信接口。它随宿主运行，不采集消息、不做实时同步。
+
+Python 只在执行任务时作为子进程启动，通过标准输入输出接收参数、报告进度，任务完成后退出。没有 FastAPI 或 Python HTTP 服务。端口冲突时可在插件选项里设置 `{"port":37989}`，然后重启 Magpie。
+
+## 数据处理约定
+
+- 仅处理本人或已获授权的数据库，源数据库与 WAL 只读；读取期间发生变化会拒绝该文件，请退出微信后再解密。
+- 同时支持已派生 AES 密钥与 SQLCipher passphrase/base key；每个文件单独验证，密钥不匹配的文件显示失败，不会伪装为成功。
+- 合并校验通过且已经提交的 WAL 帧；拒绝损坏 WAL、HMAC 异常及 SQLite 完整性错误。
+- 结果发布前在独立临时目录中验证，不覆盖源文件和历史结果。
+- 点击「停止任务」后按页检查取消状态，当前未发布的数据库会丢弃，已完成的文件保留；UI 显示清理中，直到子进程退出。
+- 密钥通过管道传入，不放在命令行、环境变量、Magpie 配置或报告中。自动获取的密钥仅留在页面会话内存，可点「清除密钥」，过期后清除。重开页面可以查看/停止正在执行的任务，需重新获取或填写密钥才能开始新任务。
+- GUI 保留最近 200 个文件结果，`report.json` 保留本次任务的完整文件结果。
+
+## 开发与验证
+
+```sh
+python -m pip install -r python/requirements.txt
+npm run check
+npm test
+npm run test:python
+npm pack --dry-run
 ```
 
-#### 2.3 安装 WCDB 隔离运行时
+不需要 `npm install`，运行时没有 npm 第三方依赖。Python 运行依赖与测试代码分离。
 
-实时聊天读取需要 Electron 隔离进程。全新克隆或 `desktop/package-lock.json` 更新后必须同步桌面端依赖：
+浏览器沙箱回归（开发环境可选）：
 
-```bash
-cd desktop
-npm ci
-cd ..
+```sh
+python -m pip install playwright
+python -m playwright install chromium
+python test/ui_smoke.py
 ```
 
-#### 2.4 安装前端依赖
+CI 在 Windows 和 Ubuntu 执行语法、接口、进程与加密数据库回归；Ubuntu 还验证实际 `sandbox="allow-scripts"` 页面中的表单、真实解密、错误提示与窄屏布局。
 
-```bash
-cd frontend
-npm ci
-```
+测试使用合成加密 SQLite 数据库，覆盖 raw key、passphrase、中文消息、加密 WAL、错误密钥、损坏 WAL、非首个页面 HMAC 异常、输出隔离、取消与原始数据保持不变。自动密钥捕获有模拟组件测试，**尚未在真实 Windows 微信及 Magpie 安装环境进行完整验收**。
 
-#### 2.5 启动服务
+开发登记：[magpie-gptfree #18](https://github.com/yang0/magpie-gptfree/issues/18)。
 
-Windows x64 与 Apple Silicon macOS 都应直接启动完整桌面开发模式：
-
-```bash
-cd desktop
-npm run dev
-```
-
-#### 启动后端API服务
-```bash
-# 在项目根目录
-uv run --no-sync main.py
-```
-
-`main.py` 会在任何项目包导入前优先加入当前仓库的 `src`，并在启动日志中打印 `wechat_decrypt_tool` 的代码来源。开发运行时应指向当前仓库的 `src/wechat_decrypt_tool/__init__.py`，而不是 `.venv/Lib/site-packages` 中的旧副本。Windows 中文路径下不要改用 editable 安装；Python 3.11 可能按系统代码页读取 uv 生成的 UTF-8 `.pth`，导致解释器启动失败。
-
-#### 启动前端开发服务器
-```bash
-# 在frontend目录
-cd frontend
-npm run dev
-```
-
-#### 2.6 访问应用
-
-- 前端界面: http://localhost:3000
-- API服务(默认): http://localhost:10392 （可通过环境变量 WECHAT_TOOL_PORT 修改）
-- API文档(默认): http://localhost:10392/docs
-
-## 语音模型下载源
-
-在「设置 → 语音转文字 → 模型下载源」可切换官方源（Hugging Face）与国内镜像（[HF-Mirror](https://hf-mirror.com)）。默认使用官方源，选择会自动保存并用于后续从模型列表发起的下载；已开始的下载保持原源。连接超时后可切换来源，再点击模型的下载按钮重试。镜像站在部分网络下会重定向到官方站，应用会遵循这一永久跳转；镜像本身的可用性仍取决于所在网络。
-
-## 打包为 EXE（Windows 桌面端）
-
-本项目提供基于 Electron 的桌面端安装包（NSIS `Setup.exe`）。
-
-```bash
-# 1) 安装桌面端依赖
-cd desktop
-npm ci
-
-# 2) 打包（会自动：nuxt generate -> 拷贝静态资源 -> PyInstaller 打包后端 -> electron-builder 生成安装包）
-npm run dist
-```
-
-输出位置：`desktop/dist/WeChatDataAnalysis Setup <version>.exe`
-
-## 打包为 DMG / ZIP（macOS 桌面端）
-
-本项目提供基于 Electron 的 macOS ARM64 桌面端安装包。
-
-```bash
-# 1) 安装桌面端依赖
-cd desktop
-npm ci
-
-# 2) 打包（会自动：nuxt generate -> 拷贝静态资源 -> PyInstaller 打包后端 -> electron-builder 生成安装包）
-npm run dist:mac
-```
-
-输出位置：`desktop/dist/WeChatDataAnalysis-<version>-mac-arm64.dmg` 和 `desktop/dist/WeChatDataAnalysis-<version>-mac-arm64.zip`
-
-## 安全说明
-
-**重要提醒**:
-
-1. **仅限个人使用**: 此工具仅用于解密您自己的微信数据
-2. **密钥安全**: 请妥善保管您的解密密钥，不要泄露给他人
-3. **数据隐私**: 解密后的数据包含个人隐私信息，请谨慎处理
-4. **合法使用**: 请遵守相关法律法规，不得用于非法目的
-
-## 免责声明
-
-请在充分理解以下内容，并自愿承担相应责任的前提下使用本项目：
-
-1. **项目性质**
-
-   本项目为独立开发的非官方开源工具，与微信、腾讯及其关联主体不存在隶属、授权、合作或认可关系。相关产品名称和商标归其权利人所有。
-
-2. **合法使用**
-
-   本项目仅可用于处理使用者本人合法持有、管理或已经取得明确授权访问的数据。使用者应遵守适用的法律法规、软件许可协议、平台规则和隐私保护义务。
-
-3. **数据与备份**
-
-   使用过程可能涉及本地数据库、密钥、聊天记录、媒体文件、微信进程和系统接口。开始前请备份重要数据、密钥及配置，并自行负责密钥保管、数据安全和隐私保护。
-
-4. **兼容性与运行风险**
-
-   客户端版本变化、内存扫描、Hook、第三方组件及其他本地处理流程，可能导致账号提醒、功能失效、处理失败、文件异常或其他不可预期结果。本项目不保证对未来微信版本持续兼容。
-
-5. **责任范围**
-
-   本项目按现状提供，不对功能的准确性、完整性、稳定性或持续可用性作出明示或默示保证。在适用法律允许的范围内，因使用、误用、版本不兼容、操作中断或第三方策略变化产生的损失和后果，由使用者自行承担。
-
-使用或继续使用本项目，即表示使用者已经阅读、理解并同意以上内容，并愿意对自己的操作及其结果负责。
-
-## 致谢
-
-1. **[H3CoF6](https://github.com/H3CoF6)**
-2. **[echotrace](https://github.com/ycccccccy/echotrace)**
-3. **[WeFlow](https://github.com/hicccc77/WeFlow)**
-4. **[wx_key](https://github.com/ycccccccy/wx_key)**
-5. **[wechat-dump-rs](https://github.com/0xlane/wechat-dump-rs)**
-6. **[oh-my-wechat](https://github.com/chclt/oh-my-wechat)**
-7. **[vue3-wechat-tool](https://github.com/Ele-Cat/vue3-wechat-tool)**
-8. **[wx-dat](https://github.com/waaaaashi/wx-dat)**
-9. **[Ritsu](https://xhslink.com/m/7YJUsd1sgyF)**
-10. **[recarto404](https://github.com/recarto404)**
-11. **[xiaoshengbao](https://github.com/xiaoshengbao)**
-
-## 贡献
-
-欢迎提交Issue和Pull Request来改进这个项目。
+源码来源与授权情况见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

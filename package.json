@@ -1,0 +1,45 @@
+{
+  "name": "magpie-wechat-decrypt",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "微信 4.x 本地数据库解密：获取密钥、批量解密与完整性校验",
+  "main": "./index.mjs",
+  "license": "UNLICENSED",
+  "files": [
+    "index.mjs",
+    "lib",
+    "gui",
+    "python/worker.py",
+    "python/*.txt",
+    "python/wechat_decrypt_tool/*.py",
+    "python/key_wheels/*.whl",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "test:python": "python -m unittest discover -s python -p 'test_*.py' -v",
+    "check": "node --check index.mjs && node --check lib/service.mjs && node --check lib/worker.mjs && node --check gui/app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {},
+  "keywords": [
+    "magpie-plugin",
+    "wechat",
+    "sqlite"
+  ],
+  "magpie": {
+    "name": "微信解密",
+    "page": {
+      "title": "微信解密",
+      "file": "gui/entry.html",
+      "service": {
+        "port": 37987,
+        "option": "port"
+      },
+      "keepAlive": true
+    }
+  }
+}
