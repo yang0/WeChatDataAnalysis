@@ -86,3 +86,36 @@ test('oversized body rejected and filesystem picker input constrained', async t 
   assert.equal((await api('start',{action:'detect',padding:'x'.repeat(20000)})).status,400);
   assert.equal((await api('start',{action:'decrypt',source:'/a\n/b',output:'/b',key:'00'.repeat(32)})).status,400);
 });
+
+async function waitSearch(api){
+  for(let i=0;i<100;i++){
+    const {search}=await (await api('discovery')).json();
+    if(search&&!['running','canceling'].includes(search.state))return search;
+    await new Promise(r=>setTimeout(r,5));
+  }
+  throw new Error('Search did not settle');
+}
+test('background account discovery is coalesced and does not replace the decryption result',async t=>{
+  let calls=0;
+  const {api}=await setup(t,async (request,{onEvent})=>{
+    if(request.action==='detect'){
+      calls++;onEvent({type:'detected',accounts:[{path:'/fixture/db_storage',account:'fixture'}]});
+    }
+    return {state:'completed',output:request.action==='decrypt'?'/result':undefined};
+  });
+  await api('start',{action:'decrypt',source:'/source',output:'/result',key:'ab'.repeat(32)});await until(api);
+  assert.equal((await api('discovery',{})).status,202);const search=await waitSearch(api);
+  assert.equal(search.accounts[0].path,'/fixture/db_storage');assert.equal('controller' in search,false);
+  assert.equal((await api('discovery',{})).status,200);assert.equal(calls,1);
+  assert.equal((await (await api('status')).json()).job.output,'/result');
+  assert.equal((await api('discovery',{force:true})).status,202);await waitSearch(api);assert.equal(calls,2);
+});
+test('background search has independent cancellation',async t=>{
+  const {api}=await setup(t,async (_request,{signal})=>{
+    if(!signal.aborted)await new Promise(r=>signal.addEventListener('abort',r,{once:true}));
+    return {state:'canceled'};
+  });
+  await api('discovery',{});assert.equal((await api('discovery/cancel',{})).status,200);
+  assert.equal((await waitSearch(api)).state,'canceled');
+  assert.equal((await (await api('status')).json()).busy,false);
+});

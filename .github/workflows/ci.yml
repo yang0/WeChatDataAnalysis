@@ -1,7 +1,7 @@
 name: Magpie WeChat Node plugin
 on:
   push:
-    branches: [main, magpie-plugin, nodejs-rewrite]
+    branches: [main, magpie-plugin, nodejs-rewrite, auto-db-discovery]
   workflow_dispatch:
 permissions:
   contents: read

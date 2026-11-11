@@ -1,6 +1,6 @@
 {
   "name": "magpie-wechat-decrypt",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "微信 4.x 本地数据库解密：Node.js / Bun 插件，无需 Python",
   "main": "./index.mjs",
@@ -14,7 +14,8 @@
     "native/win32-x64/wx_key.dll",
     "native/UPSTREAM.md",
     "README.md",
-    "THIRD_PARTY_NOTICES.md"
+    "THIRD_PARTY_NOTICES.md",
+    "native/discover-paths.ps1"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",

@@ -15,3 +15,9 @@ Task: https://github.com/yang0/magpie-gptfree/issues/20
 Native build/ABI validation: https://github.com/yang0/WeChatDataAnalysis/actions/runs/42935139318 . Prebuilt DLL SHA-256: a72f1bc343d6e8154adacffb5ec07ed968b08fbf81ae5cbe14deb3adb22bb254 .
 
 Runtime package: approximately 235 KiB compressed / 498 KiB unpacked, 22 files. Local Node tests: 24 passed, Windows-only DLL process probe skipped on Linux. Final Windows/Bun CI must run the included DLL process probe against the committed binary.
+
+## v0.2.1 account directory discovery
+
+Task: https://github.com/yang0/magpie-gptfree/issues/21 . Opening the plugin starts an independent discovery job. Config/registry and redirected Documents are prioritized; a bounded local filesystem scan fills in likely roots. Search only reads path configuration and file names. It preserves the main decryption job and manual source path.
+
+Tests cover default/custom paths, UTF-16 config, Windows Documents tokens, registry and redirected locations, fixed-disk fallback, canonical deduplication, missing/access-denied settings, search limits and cancellation, and actual Windows PowerShell path query. The browser smoke test checks single-account auto-fill, preserved manual input and selection of multiple results.
