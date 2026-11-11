@@ -1,27 +1,34 @@
-# 微信解密 · Magpie 插件
+# 微信解密 · Magpie Node.js 插件
 
-把微信 4.x 加密数据库转换为普通 SQLite。参考 `yang0/magpie-gptfree` 的插件页面集成，独立提取 `yang0/WeChatDataAnalysis` 的数据库解密部分。
+将微信 4.x 加密数据库转换为普通 SQLite。**无需 Python、pip、虚拟环境，也无需自己启动后台服务。**
 
-## 安装
+## 安装与使用
 
-在 Magpie 的「插件 → 发现」底部输入：
+在 Magpie「插件 → 发现」输入：
 
 ```text
 github:yang0/WeChatDataAnalysis
 ```
 
-安装并启用后，打开「微信解密」。默认 `main` 分支是独立插件，原完整应用保存在 [`original-app`](https://github.com/yang0/WeChatDataAnalysis/tree/original-app) 分支。`magpie-plugin` 分支作为旧安装地址的兼容入口保留。
+启用后打开「微信解密」：
+
+1. 选择微信账号的 `db_storage` 目录。
+2. 选择一个独立输出目录。
+3. 填入 64 位十六进制数据库密钥；Windows x64 也可以展开自动获取区域，确认保存内容后重启微信、完成登录以获取密钥。
+4. 点击「开始解密」，查看进度、逐文件错误和结果路径。停止任务时，当前尚未完成的文件会清理，已成功的文件保留。
+
+每次任务创建独立结果目录，保留原始相对路径。输出包括明文 `.db` 和完整结果报告 `report.json`。部分消息字段仍可能压缩或使用结构化编码；本插件不提供聊天 TXT 导出、媒体解密、聊天分析或实时同步。
+
+默认 `main` 是插件，原完整应用在 [`original-app`](https://github.com/yang0/WeChatDataAnalysis/tree/original-app)。`magpie-plugin` 保留为旧安装地址的兼容分支。
 
 ## 本地 checkout
-
-首次下载插件：
 
 ```sh
 git clone https://github.com/yang0/WeChatDataAnalysis.git magpie-wechat-decrypt
 cd magpie-wechat-decrypt
 ```
 
-已有仓库切到插件主分支：
+已有仓库：
 
 ```sh
 git fetch origin
@@ -29,72 +36,49 @@ git switch main
 git pull --ff-only origin main
 ```
 
-如需原完整应用：
+在 Magpie 的安装输入框填写本地目录完整路径也可以，例如 `D:/code/magpie-wechat-decrypt`。更新本地代码后重新加载插件/重启 Magpie。原完整应用用 `git switch original-app`。
+
+## 运行方式
+
+- **Magpie 内使用：**由 Magpie 自带的 Bun 插件宿主运行，无需额外安装 Node.js、Bun 或 Python。
+- **独立开发：**Node.js 22.13+ 或当前 Bun。没有 npm 运行依赖，无需执行 `npm install`。
+- 界面沿用 Magpie 官方插件页面/沙箱机制，轻量通信接口由插件管理，仅监听 `127.0.0.1:37987`；不需要单独部署 FastAPI、Electron 或其他服务。端口冲突时插件选项设为 `{"port":37989}` 后重启。
+- 解密、PBKDF2-SHA512、AES-256-CBC、HMAC-SHA512 与 WAL 提交合并全部用 JavaScript / Node 内置 API 实现。文件逐页读写，计算在工作线程中进行，不把整个数据库加载进内存，不阻塞插件页面。
+- SQLite 校验使用宿主内置引擎：Bun 的 `bun:sqlite` / Node 的 `node:sqlite`。通过真实 `PRAGMA quick_check` 和 schema 读取后才发布结果。
+- Windows 自动获取密钥使用随插件提供的 x64 DLL，通过系统自带 PowerShell 调用。DLL 从固定版本 C++ 源码构建，**没有 Python DLL 依赖**，无需编译工具。仅在获取密钥时启动桥接进程，完成或取消后卸载 Hook。
+- 其他系统可以填入已有密钥解密兼容数据库。微信 3.x 不在本版支持范围。自动取密钥的真实兼容性取决于当前微信版本，可能需要以管理员身份运行 Magpie。
+- 旧版本留下的 Python 虚拟环境不会再被读取或启动，不需要为使用新版手动删除。
+
+## 数据处理
+
+处理本人或已获授权的数据。源数据库、WAL 只读；输出目录不能与源目录互相包含。密钥不写入命令行、环境变量、配置、日志或报告。自动获取的密钥仅保留在页面会话内存，可以清除。
+
+每个数据库分别尝试已派生 AES key 和 SQLCipher passphrase/base key，以页面 HMAC 确认。WAL 仅合并校验正确的已提交事务；损坏 WAL、不完整页面、任何页面 HMAC 异常、SQLite 完整性错误、读取期间源文件变化均拒绝发布。检测到未处理的 rollback journal 时应正常退出微信后重试。
+
+## 开发与测试
 
 ```sh
-git fetch origin
-git switch original-app
-```
-
-也可以在 Magpie「插件 → 发现」输入本地插件目录的完整路径安装。
-
-## 使用
-
-1. 选择自己的微信账号数据目录，推荐选择该账号的 `db_storage`。也可以点击「查找默认数据目录」。自定义存储位置可直接填写完整路径。
-2. 选择一个独立的输出目录，不能与源目录相同或互相包含。
-3. 填入已有的 64 位十六进制数据库密钥，或在 Windows 展开「没有密钥？从 Windows 微信获取」。自动获取会重启微信，界面要求先确认保存内容；随后在微信窗口完成登录。
-4. 点击「开始解密」。每次生成一个独立结果目录，保留源文件的相对路径。界面显示每个文件的成功、失败原因与 WAL 合并情况；完整结果保存在 `report.json`。
-
-结果是可以用 SQLite 工具读取的 `.db`，不是聊天记录 TXT。数据库内的部分消息字段仍可能使用压缩或结构化编码，需要额外解析才能整理成可读聊天记录。当前不包含图片、语音、视频解密，聊天分析、年度总结和实时同步。
-
-## 运行环境
-
-- Magpie 提供插件宿主，不需要安装 Electron、启动 FastAPI、配置 Docker 或另外运行服务。
-- 本机需要 **Python 3.11+**。插件首次执行任务时，会自动在用户目录创建专属虚拟环境并安装 `cryptography`；Windows 获取密钥时额外安装 `psutil` 和 `wx_key`。依赖安装需要联网，数据库解密本身不上传数据。
-- 没有 Python 时会给出明确错误。安装 Python 后重试即可；插件不会自动下载安装 Python 本体，也不会修改全局 Python 包。
-- 自动获取密钥先支持 Windows x64 / Python 3.11–3.14（复用原仓库的预编译组件），可能需要以管理员身份启动 Magpie；兼容性取决于微信版本。macOS / Linux 可用已有正确密钥处理兼容的微信 4.x 数据库副本。微信 3.x 不在当前支持范围。
-- 如需使用自己管理的解释器，启动 Magpie 前设置 `MAGPIE_WECHAT_PYTHON` 为已安装上述依赖的 Python 路径。`MAGPIE_WECHAT_HOME` 可修改插件专属环境目录。
-
-### 关于“后台服务”
-
-没有独立后台程序需要你启动。Magpie 的内嵌页面受沙箱限制，按照参考插件的方式，由插件宿主自动提供一个仅监听 `127.0.0.1:37987` 的轻量页面/通信接口。它随宿主运行，不采集消息、不做实时同步。
-
-Python 只在执行任务时作为子进程启动，通过标准输入输出接收参数、报告进度，任务完成后退出。没有 FastAPI 或 Python HTTP 服务。端口冲突时可在插件选项里设置 `{"port":37989}`，然后重启 Magpie。
-
-## 数据处理约定
-
-- 仅处理本人或已获授权的数据库，源数据库与 WAL 只读；读取期间发生变化会拒绝该文件，请退出微信后再解密。
-- 同时支持已派生 AES 密钥与 SQLCipher passphrase/base key；每个文件单独验证，密钥不匹配的文件显示失败，不会伪装为成功。
-- 合并校验通过且已经提交的 WAL 帧；拒绝损坏 WAL、HMAC 异常及 SQLite 完整性错误。
-- 结果发布前在独立临时目录中验证，不覆盖源文件和历史结果。
-- 点击「停止任务」后按页检查取消状态，当前未发布的数据库会丢弃，已完成的文件保留；UI 显示清理中，直到子进程退出。
-- 密钥通过管道传入，不放在命令行、环境变量、Magpie 配置或报告中。自动获取的密钥仅留在页面会话内存，可点「清除密钥」，过期后清除。重开页面可以查看/停止正在执行的任务，需重新获取或填写密钥才能开始新任务。
-- GUI 保留最近 200 个文件结果，`report.json` 保留本次任务的完整文件结果。
-
-## 开发与验证
-
-```sh
-python -m pip install -r python/requirements.txt
 npm run check
 npm test
-npm run test:python
 npm pack --dry-run
 ```
 
-不需要 `npm install`，运行时没有 npm 第三方依赖。Python 运行依赖与测试代码分离。
-
-浏览器沙箱回归（开发环境可选）：
+Bun 宿主兼容测试：
 
 ```sh
-python -m pip install playwright
-python -m playwright install chromium
-python test/ui_smoke.py
+bun test test
 ```
 
-CI 在 Windows 和 Ubuntu 执行语法、接口、进程与加密数据库回归；Ubuntu 还验证实际 `sandbox="allow-scripts"` 页面中的表单、真实解密、错误提示与窄屏布局。
+浏览器回归（仅开发时安装 Playwright）：
 
-测试使用合成加密 SQLite 数据库，覆盖 raw key、passphrase、中文消息、加密 WAL、错误密钥、损坏 WAL、非首个页面 HMAC 异常、输出隔离、取消与原始数据保持不变。自动密钥捕获有模拟组件测试，**尚未在真实 Windows 微信及 Magpie 安装环境进行完整验收**。
+```sh
+npm install --no-save --package-lock=false playwright
+npx playwright install chromium
+npm run test:ui
+```
 
-开发登记：[magpie-gptfree #18](https://github.com/yang0/magpie-gptfree/issues/18)。
+CI 在 Windows / Ubuntu、Node / Bun 四种组合下运行回归；额外执行 Windows DLL 编译、无 Python 依赖检查、真实/模拟 DLL ABI 探测及 Ubuntu 浏览器沙箱表单解密测试。固定加密测试向量由重写前的独立 Python 实现生成；测试和产品都无需运行 Python。
 
-源码来源与授权情况见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+真实 Windows 微信密钥捕获与实际 Magpie 安装仍需用户本机验收，模拟测试不能替代当前微信版本的实测。
+
+开发登记：[magpie-gptfree #20](https://github.com/yang0/magpie-gptfree/issues/20)。来源与授权情况：[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

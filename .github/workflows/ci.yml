@@ -1,40 +1,82 @@
-name: Magpie WeChat plugin
+name: Magpie WeChat Node plugin
 on:
   push:
-    branches: [main, magpie-plugin]
+    branches: [main, magpie-plugin, nodejs-rewrite]
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
+  native:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: H3CoF6/py_wx_key
+          ref: f32e146647380a6ee14791cc5d4e279f9c480a41
+          path: native-upstream
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build native DLL without Python
+        shell: pwsh
+        run: |
+          cmake -S native -B native-build -A x64 "-DUPSTREAM=$((Get-Location).Path)/native-upstream"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          cmake --build native-build --config Release
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Force native/win32-x64 | Out-Null
+          Copy-Item native-build/Release/wx_key.dll native/win32-x64/wx_key.dll
+          node scripts/native-manifest.mjs
+      - name: Verify native ABI with no Python installed in plugin
+        shell: pwsh
+        run: |
+          $vs = & "${env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere.exe" -latest -property installationPath
+          $dumpbin = Get-ChildItem "$vs/VC/Tools/MSVC/*/bin/Hostx64/x64/dumpbin.exe" | Select-Object -Last 1
+          $deps = & $dumpbin.FullName /dependents native/win32-x64/wx_key.dll
+          Write-Output $deps
+          if ($deps -match 'python[0-9].*\.dll') { throw 'Python dependency found' }
+          $probe = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File native/key-bridge.ps1 -DllPath native/win32-x64/wx_key.dll -ProbeOnly
+          if ($LASTEXITCODE) { throw "Real DLL ABI probe failed: $probe" }
+          $probe = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File native/key-bridge.ps1 -DllPath native-build/Release/fake_key.dll -ProbeOnly
+          if ($LASTEXITCODE) { throw "Fake DLL ABI probe failed: $probe" }
+          $result = $probe | ConvertFrom-Json
+          if ($result.sample -ne ('a' * 64)) { throw 'Native bool/buffer ABI mismatch' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-key-native
+          path: |
+            native/win32-x64/wx_key.dll
+            native/manifest.json
   test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        runtime: [node, bun]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: python -m pip install -r python/requirements.txt
+      - uses: oven-sh/setup-bun@v2
       - run: npm run check
-      - run: npm test
-      - run: npm run test:python
+      - if: matrix.runtime == 'node'
+        run: npm test
+      - if: matrix.runtime == 'bun'
+        run: bun test test
       - run: npm pack --dry-run
-      - if: runner.os == 'Linux'
+      - if: runner.os == 'Linux' && matrix.runtime == 'node'
         run: |
-          python -m pip install playwright
-          python -m playwright install --with-deps chromium
-          python test/ui_smoke.py
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+          node test/ui_smoke.mjs
         env:
           UI_ARTIFACTS: ui-artifacts
-      - if: runner.os == 'Linux' && always()
+      - if: runner.os == 'Linux' && matrix.runtime == 'node' && always()
         uses: actions/upload-artifact@v4
         with:
-          name: ui-screenshots
+          name: node-ui-screenshots
           path: ui-artifacts
           if-no-files-found: ignore

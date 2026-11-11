@@ -1,26 +1,17 @@
-# Sources and third-party notices
+# Sources and notices
 
-## WeChatDataAnalysis subset
+## JavaScript database implementation
 
-The following files are extracted from `yang0/WeChatDataAnalysis` (`main`, commit `fffe9ca2bdb27f786227cff9d3620940ad8c034c`), a fork of `LifeArchiveProject/WeChatDataAnalysis`:
+The SQLCipher 4.x/WCDB parameters, raw/base key compatibility, committed WAL rules and source-stability checks follow the original `yang0/WeChatDataAnalysis` implementation at commit `fffe9ca2bdb27f786227cff9d3620940ad8c034c` (forked from `LifeArchiveProject/WeChatDataAnalysis`). Version 0.2 rewrites the implementation in JavaScript; the Python source, bytecode, requirements and wheels are removed. Independent synthetic encrypted test vectors generated before removal are retained under `test/fixtures.json`; no user data is included.
 
-- `python/wechat_decrypt_tool/wechat_decrypt.py`
-- `python/wechat_decrypt_tool/sqlite_wal.py`
-- `python/wechat_decrypt_tool/sqlite_diagnostics.py`
-- `python/wechat_decrypt_tool/database_filters.py`
+The original source has no root license declaring a general redistribution grant at the inspected revision. This same-repository derivative preserves attribution and lineage; package.json remains UNLICENSED rather than assigning a blanket license to upstream work.
 
-The only plugin-specific change inside these extracted files is a cooperative cancellation check in the per-page decryption loop. `app_paths.py` and `logging_config.py` are small standalone adapters; other original application services are not bundled.
+## Magpie
 
-The original source repository has no root LICENSE declaring a general redistribution license at the inspected revision. This dedicated branch preserves the source repository lineage and attribution. `package.json` therefore uses `UNLICENSED`; no new MIT or other blanket license is claimed for extracted code. Any future external distribution must resolve the upstream licensing terms.
+The manifest and page/bootstrap integration follow official `yetone/magpie` plugin page documentation and the author's `yang0/magpie-gptfree` integration. Magpie's Bun host runs Node-compatible APIs. SQLite uses the runtime's bundled engine. No npm runtime dependencies, Python runtime, model weights or full application UI are bundled.
 
-## Magpie integration reference
+## Windows key component
 
-The package manifest, sandboxed page bootstrap, loopback UI architecture and Python virtual-environment pattern were implemented with reference to `yang0/magpie-gptfree` (package metadata declares MIT) and the official `yetone/magpie` plugin page documentation. GPT account, authentication, model and image-generation code is not included.
+`native/win32-x64/wx_key.dll` is built from `H3CoF6/py_wx_key` commit `f32e146647380a6ee14791cc5d4e279f9c480a41`, excluding pybind11 and Python headers/libraries. Source: https://github.com/H3CoF6/py_wx_key/tree/f32e146647380a6ee14791cc5d4e279f9c480a41 . See native/UPSTREAM.md for the exact ABI, source files and source/license boundary. Its bundled upstream MinHook and Xbyak components retain their upstream terms. The Windows DLL and manifest are generated and ABI-tested in CI, then included in the installable plugin. SHA-256 is checked before native loading.
 
-## Runtime dependencies
-
-- cryptography — https://github.com/pyca/cryptography — Apache-2.0 OR BSD-3-Clause.
-- psutil (optional Windows key acquisition) — https://github.com/giampaolo/psutil — BSD-3-Clause.
-- wx_key (optional Windows key acquisition) — wrapper releases: https://github.com/H3CoF6/py_wx_key/releases/ ; underlying component: https://github.com/ycccccccy/wx_key . The existing CPython 3.11–3.14 Windows x64 wheels from the same inspected WeChatDataAnalysis commit are retained under `python/key_wheels` and installed on demand. Their distribution terms are not re-licensed here. This plugin uses the original initialize/poll/cleanup API.
-
-Dependencies are installed into a separate local virtual environment. No user databases, keys, media, machine credentials, native-core license mechanisms, model weights or upstream UI bundles are included. The optional wx_key wheels are the only bundled native key-capture dependency.
+The PowerShell/C# bridge is isolated to a short-lived process, relies on Windows-provided components, and does not load .pyd files or Python DLLs. Real account key capture is not covered by fake-process/ABI tests.

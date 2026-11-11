@@ -1,28 +1,28 @@
 {
   "name": "magpie-wechat-decrypt",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
-  "description": "微信 4.x 本地数据库解密：获取密钥、批量解密与完整性校验",
+  "description": "微信 4.x 本地数据库解密：Node.js / Bun 插件，无需 Python",
   "main": "./index.mjs",
   "license": "UNLICENSED",
   "files": [
     "index.mjs",
     "lib",
     "gui",
-    "python/worker.py",
-    "python/*.txt",
-    "python/wechat_decrypt_tool/*.py",
-    "python/key_wheels/*.whl",
+    "native/key-bridge.ps1",
+    "native/manifest.json",
+    "native/win32-x64/wx_key.dll",
+    "native/UPSTREAM.md",
     "README.md",
     "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
     "test": "node --test test/*.test.mjs",
-    "test:python": "python -m unittest discover -s python -p 'test_*.py' -v",
-    "check": "node --check index.mjs && node --check lib/service.mjs && node --check lib/worker.mjs && node --check gui/app.js"
+    "check": "node scripts/check.mjs",
+    "test:ui": "node test/ui_smoke.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13"
   },
   "dependencies": {},
   "keywords": [

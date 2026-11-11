@@ -1,2 +1,0 @@
-psutil>=7.0.0
-wx_key==2.0.1; sys_platform == 'win32'
