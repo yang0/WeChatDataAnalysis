@@ -11,3 +11,7 @@ Task: https://github.com/yang0/magpie-gptfree/issues/20
 - Real WeChat key acquisition and real Magpie installation still require user-machine validation.
 
 `main` and compatibility branch `magpie-plugin` carry the plugin. Original complete application remains on `original-app` at `fffe9ca2bdb27f786227cff9d3620940ad8c034c`.
+
+Native build/ABI validation: https://github.com/yang0/WeChatDataAnalysis/actions/runs/42935139318 . Prebuilt DLL SHA-256: a72f1bc343d6e8154adacffb5ec07ed968b08fbf81ae5cbe14deb3adb22bb254 .
+
+Runtime package: approximately 235 KiB compressed / 498 KiB unpacked, 22 files. Local Node tests: 24 passed, Windows-only DLL process probe skipped on Linux. Final Windows/Bun CI must run the included DLL process probe against the committed binary.
