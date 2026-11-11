@@ -48,7 +48,11 @@ function render(data) {
   for (const event of job.events || []) {
     const row = document.createElement('div'); row.className = 'event' + (event.success ? '' : ' bad');
     const badge = document.createElement('strong'); badge.textContent = event.success ? '成功 · ' : '失败 · ';
-    row.append(badge, document.createTextNode(event.file + (event.error ? '：' + event.error : event.wal_pages ? ` · 已合并 ${event.wal_pages} 个 WAL 页` : '')));
+    const notes = [];
+    if (event.wal_pages) notes.push(`已合并 ${event.wal_pages} 个 WAL 页`);
+    if (event.trimmed_zero_pages) notes.push(`已清理 ${event.trimmed_zero_pages} 个尾随空页`);
+    else if (event.zero_pages) notes.push(`已跳过 ${event.zero_pages} 个预分配空页`);
+    row.append(badge, document.createTextNode(event.file + (event.error ? '：' + event.error : notes.length ? ' · ' + notes.join('，') : '')));
     $('events').append(row);
   }
   if (job.state === 'error') error(job.message || '全部数据库解密失败，请核对密钥、微信版本和下方文件错误。');

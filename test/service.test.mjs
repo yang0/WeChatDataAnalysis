@@ -41,7 +41,7 @@ test('real job lifecycle, protocol progress and key do not leak to status', asyn
     assert.equal(request.key, key);
     onEvent({type:'key',key});
     onEvent({type:'started',total:2,output:'/results'});
-    onEvent({type:'file',file:'message.db',success:true,done:1,successful:1});
+    onEvent({type:'file',file:'message.db',success:true,wal_pages:2,zero_pages:150,trimmed_zero_pages:150,done:1,successful:1});
     return {state:'partial',successful:1,failed:1,total:2,output:'/results'};
   });
   assert.equal((await api('start', {action:'decrypt',source:'/source',output:'/results',key})).status, 202);
@@ -49,6 +49,8 @@ test('real job lifecycle, protocol progress and key do not leak to status', asyn
   assert.equal(result.job.state, 'partial');
   assert.equal(result.hasKey,true);
   assert.equal(result.job.successful,1);
+  assert.equal(result.job.events[0].zero_pages,150);
+  assert.equal(result.job.events[0].trimmed_zero_pages,150);
   assert.equal(JSON.stringify(result).includes(key),false);
   assert.equal(JSON.stringify(result).includes('controller'),false);
   await api('forget',{});
