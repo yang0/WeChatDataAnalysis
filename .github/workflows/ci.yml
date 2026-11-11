@@ -1,7 +1,7 @@
 name: Magpie WeChat plugin
 on:
   push:
-    branches: [magpie-plugin]
+    branches: [main, magpie-plugin]
   workflow_dispatch:
 permissions:
   contents: read

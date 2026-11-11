@@ -11,8 +11,12 @@ Implementation task: https://github.com/yang0/magpie-gptfree/issues/18
 
 ## Browser and machine validation
 
-`test/ui_smoke.py` exercises the actual sandboxed HTML page and real Python worker, and is configured in the dedicated branch's Ubuntu CI. Local Chromium could not start because this execution environment denies its process singleton Unix socket (`socket(): Operation not permitted`). No local visual/browser pass is claimed.
+`test/ui_smoke.py` exercises the actual sandboxed HTML page and real Python worker, and is configured in the plugin's Ubuntu CI. Local Chromium could not start because this execution environment denies its process singleton Unix socket (`socket(): Operation not permitted`). No local visual/browser pass is claimed.
 
-GitHub CI must be checked on the final branch commit; presence of a workflow file alone does not establish a pass. Real Magpie installation and native key capture in a logged-in Windows WeChat account require the user's machine and have not been claimed as verified. No real account data was used or uploaded.
+The plugin baseline `0d3f095b64b6e78e10be908de80f36cb5f79d3a7` passed Windows and Ubuntu CI, including actual sandboxed browser tests: https://github.com/yang0/WeChatDataAnalysis/actions/runs/42925591498 . Branch-promotion CI must be checked on its final commit. Real Magpie installation and native key capture in a logged-in Windows WeChat account require the user's machine and have not been claimed as verified. No real account data was used or uploaded.
 
-The dedicated branch is a standalone package tree. Do not merge it into the full application's main branch.
+## Branch roles
+
+Per the user's explicit follow-up request, `main` now carries the standalone plugin. The original application's exact main commit `fffe9ca2bdb27f786227cff9d3620940ad8c034c` is retained on `original-app`. The `magpie-plugin` branch remains as a compatibility installation address. Promotion is a non-forced fast-forward; history is retained.
+
+Promotion task: https://github.com/yang0/magpie-gptfree/issues/19

@@ -7,10 +7,36 @@
 在 Magpie 的「插件 → 发现」底部输入：
 
 ```text
-github:yang0/WeChatDataAnalysis#magpie-plugin
+github:yang0/WeChatDataAnalysis
 ```
 
-安装并启用后，打开「微信解密」。本分支根目录就是独立插件，不需要安装原项目。原项目 `main` 保留原样；不要把这个专用分支合并回原项目。
+安装并启用后，打开「微信解密」。默认 `main` 分支是独立插件，原完整应用保存在 [`original-app`](https://github.com/yang0/WeChatDataAnalysis/tree/original-app) 分支。`magpie-plugin` 分支作为旧安装地址的兼容入口保留。
+
+## 本地 checkout
+
+首次下载插件：
+
+```sh
+git clone https://github.com/yang0/WeChatDataAnalysis.git magpie-wechat-decrypt
+cd magpie-wechat-decrypt
+```
+
+已有仓库切到插件主分支：
+
+```sh
+git fetch origin
+git switch main
+git pull --ff-only origin main
+```
+
+如需原完整应用：
+
+```sh
+git fetch origin
+git switch original-app
+```
+
+也可以在 Magpie「插件 → 发现」输入本地插件目录的完整路径安装。
 
 ## 使用
 
