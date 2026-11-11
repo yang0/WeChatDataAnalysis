@@ -17,7 +17,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 public static class WeChatKeyBridge {
   [DllImport("kernel32",CharSet=CharSet.Unicode,SetLastError=true)] static extern IntPtr LoadLibraryEx(string path,IntPtr file,uint flags);
-  [DllImport("kernel32",CharSet=CharSet.Ansi,SetLastError=true)] static extern IntPtr GetProcAddress(IntPtr module,string name);
+  [DllImport("kernel32",CharSet=CharSet.Ansi,ExactSpelling=true,SetLastError=true)] static extern IntPtr GetProcAddress(IntPtr module,string name);
   [DllImport("kernel32")] static extern bool FreeLibrary(IntPtr module);
   [UnmanagedFunctionPointer(CallingConvention.Cdecl)] [return:MarshalAs(UnmanagedType.I1)] delegate bool InitFn(uint pid,IntPtr p,IntPtr m,int offset);
   [UnmanagedFunctionPointer(CallingConvention.Cdecl)] [return:MarshalAs(UnmanagedType.I1)] delegate bool PollFn(StringBuilder key,int n,StringBuilder md5,int m);

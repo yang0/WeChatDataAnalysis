@@ -19,7 +19,7 @@ async function message(file){const db=await openDatabase(file);try{return db.pre
 for(const mode of ['raw','passphrase'])test(`independent Python-generated ${mode} SQLCipher vector decrypts to real readable SQLite`,async t=>{
   const req=await setup(t,mode);const before=await readFile(join(req.source,'message.db'));
   const result=await decryptJob(req);
-  assert.equal(result.state,'completed');assert.equal(result.successful,1);
+  assert.equal(result.state,'completed',await readFile(join(result.output,'report.json'),'utf8'));assert.equal(result.successful,1);
   assert.equal(await message(join(result.output,'message.db')),'你好，微信');
   assert.deepEqual(await readFile(join(req.source,'message.db')),before);
   assert.equal((await readFile(join(result.output,'report.json'),'utf8')).includes(fixture.key),false);
@@ -70,4 +70,19 @@ test('symlink WAL rejected without opening its target',async t=>{
   if(process.platform==='win32')return;
   const req=await setup(t);await writeFile(join(req.root,'external-wal'),'hello');await symlink(join(req.root,'external-wal'),join(req.source,'message.db-wal'));
   const result=await decryptJob(req);assert.equal(result.state,'error');
+});
+
+test('AbortSignal reaches a running worker and removes the current partial database',async t=>{
+  const req=await setup(t);await rm(join(req.source,'message.db'));
+  const db=await openDatabase(join(req.source,'message.db'),{readonly:false});
+  try{db.exec('CREATE TABLE payload(content BLOB); BEGIN');const insert=db.prepare('INSERT INTO payload VALUES (?)');for(let i=0;i<512;i++)insert.run(Buffer.alloc(8192,i%255));db.exec('COMMIT');}finally{db.close();}
+  const controller=new AbortController();let sawPages=false;
+  const result=await runWorker({action:'decrypt',...req},{signal:controller.signal,onEvent:e=>{if(e.type==='progress'&&e.message){sawPages=true;controller.abort();}}});
+  assert.equal(sawPages,true);assert.equal(result.state,'canceled');assert.equal(result.successful,0);
+  assert.deepEqual(await readdir(result.output),['report.json']);
+});
+test('output symlink overlap is rejected after canonicalizing existing ancestors',async t=>{
+  if(process.platform==='win32')return;
+  const req=await setup(t);const alias=join(req.root,'alias');await symlink(req.source,alias);
+  await assert.rejects(decryptJob({...req,output:join(alias,'new-output')}),/不能相同或互相包含/);
 });
