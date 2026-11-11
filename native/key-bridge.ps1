@@ -1,4 +1,4 @@
-param([Parameter(Mandatory=$true)][string]$DllPath,[switch]$ProbeOnly,[switch]$FindOnly)
+﻿param([Parameter(Mandatory=$true)][string]$DllPath,[switch]$ProbeOnly,[switch]$FindOnly)
 $ErrorActionPreference='Stop'
 [Console]::InputEncoding=New-Object System.Text.UTF8Encoding($false)
 [Console]::OutputEncoding=New-Object System.Text.UTF8Encoding($false)
